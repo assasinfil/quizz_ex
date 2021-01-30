@@ -11,6 +11,22 @@ type QuestionReader interface {
 	ParseQuestions(r io.Reader) ([]Question, error)
 }
 
+type CsvReader struct {
+}
+
+func (c CsvReader) ParseQuestions(r io.Reader) ([]Question, error) {
+	reader := csv.NewReader(r)
+	records, err := reader.ReadAll()
+	if err != nil {
+		panic(err)
+	}
+	var out []Question
+	for _, record := range records {
+		out = append(out, Question{record[0], record[1]})
+	}
+	return out, err
+}
+
 type Question struct {
 	question string
 	answer   string
@@ -32,18 +48,21 @@ func readCsv(filename string) []Question {
 	for _, record := range records {
 		out = append(out, Question{record[0], record[1]})
 	}
-	//fmt.Print(out)
-	// Допишите код здесь
 	return out
 }
 
 func main() {
+	csvFile, err := os.Open("problems.csv")
+	if err != nil {
+		panic(err)
+	}
+	defer csvFile.Close()
+	r := CsvReader{}
+
 	total := 0
 
-	questions := readCsv("problems.csv")
-	// Пройтись циклом. Вывести вопрос, предложить пользователю ввести ответ.
-	// Если ответ правильный, увеличить total.
-	// for
+	questions, _ := r.ParseQuestions(csvFile)
+
 	for _, question := range questions {
 		var result string
 		fmt.Printf("%s: ", question.question)
