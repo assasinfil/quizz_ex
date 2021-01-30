@@ -17,26 +17,30 @@ type Question struct {
 }
 
 func readCsv(filename string) []Question {
-	csvfile, err := os.Open(filename)
+	csvFile, err := os.Open(filename)
 	if err != nil {
 		panic(err)
 	}
-	defer csvfile.Close()
+	defer csvFile.Close()
 
-	r := csv.NewReader(csvfile)
+	r := csv.NewReader(csvFile)
 	records, err := r.ReadAll()
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println(records[0])
+	var out []Question
+	for _, record := range records {
+		out = append(out, Question{record[0], record[1]})
+	}
+	//fmt.Print(out)
 	// Допишите код здесь
-	return nil
+	return out
 }
 
 func main() {
 	total := 0
 
-	questions := []Question{{"1 + 1", "2"}, {"2 + 2", "4"}}
+	questions := readCsv("problems.csv")
 	// Пройтись циклом. Вывести вопрос, предложить пользователю ввести ответ.
 	// Если ответ правильный, увеличить total.
 	// for
