@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"encoding/csv"
+	"flag"
 	"fmt"
 	"io"
 	"os"
@@ -73,17 +74,28 @@ func readCsv(filename string) []Question {
 	return out
 }
 
+var (
+	f = flag.String("f", "", "-f path to file")
+)
+
 func main() {
-	txtFile, err := os.Open("problems.txt")
+	flag.Parse()
+	var r QuestionReader
+	if (*f)[len(*f)-3:] == "csv" {
+		r = CsvReader{}
+	} else if (*f)[len(*f)-3:] == "txt" {
+		r = TxtReader{}
+	}
+
+	file, err := os.Open(*f)
 	if err != nil {
 		panic(err)
 	}
-	defer txtFile.Close()
-	r := TxtReader{}
+	defer file.Close()
 
 	total := 0
 
-	questions, _ := r.ParseQuestions(txtFile)
+	questions, _ := r.ParseQuestions(file)
 
 	for _, question := range questions {
 		var result string
