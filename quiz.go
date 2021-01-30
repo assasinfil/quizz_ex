@@ -40,4 +40,13 @@ func main() {
 	// Пройтись циклом. Вывести вопрос, предложить пользователю ввести ответ.
 	// Если ответ правильный, увеличить total.
 	// for
+	for _, question := range questions {
+		var result string
+		fmt.Printf("%s: ", question.question)
+		_, _ = fmt.Scanf("%s", &result)
+		if question.answer == result {
+			total++
+		}
+	}
+	fmt.Printf("You got %d / %d", total, len(questions))
 }
