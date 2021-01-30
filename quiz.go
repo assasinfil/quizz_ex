@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bufio"
 	"encoding/csv"
 	"fmt"
 	"io"
@@ -25,6 +26,27 @@ func (c CsvReader) ParseQuestions(r io.Reader) ([]Question, error) {
 		out = append(out, Question{record[0], record[1]})
 	}
 	return out, err
+}
+
+type TxtReader struct {
+}
+
+func (t TxtReader) ParseQuestions(r io.Reader) ([]Question, error) {
+	scanner := bufio.NewScanner(r)
+	var i int
+	var question string
+	var answer string
+	var out []Question
+	for scanner.Scan() {
+		if i%2 == 0 {
+			question = scanner.Text()
+		} else {
+			answer = scanner.Text()
+			out = append(out, Question{question, answer})
+		}
+		i++
+	}
+	return out, nil
 }
 
 type Question struct {
@@ -52,16 +74,16 @@ func readCsv(filename string) []Question {
 }
 
 func main() {
-	csvFile, err := os.Open("problems.csv")
+	txtFile, err := os.Open("problems.txt")
 	if err != nil {
 		panic(err)
 	}
-	defer csvFile.Close()
-	r := CsvReader{}
+	defer txtFile.Close()
+	r := TxtReader{}
 
 	total := 0
 
-	questions, _ := r.ParseQuestions(csvFile)
+	questions, _ := r.ParseQuestions(txtFile)
 
 	for _, question := range questions {
 		var result string
